@@ -6,7 +6,7 @@ const { ApolloServerPluginDrainHttpServer } = require('@apollo/server/plugin/dra
 const http = require('http');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const Schema = require('./Schema/schema');
+const Schema = require('./GraphQL/schema'); // ✅ Import the GraphQL schema
 
 
 const app = express();
@@ -27,7 +27,7 @@ async function startApolloServer() {
 
     const PORT = process.env.PORT || 4000;
     httpServer.listen(PORT, () => {
-        console.log(`🚀 Server running on http://localhost:${PORT}`);
+        console.log(`🚀 Server running on http://localhost:${PORT}/graphql`);
     });
 }
 
