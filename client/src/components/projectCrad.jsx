@@ -1,3 +1,5 @@
+import formatStatus from "../utils/utils";
+
 export default function ProjectCard({ project }) {
   return (
     <div className='col-md-6'>
@@ -11,7 +13,7 @@ export default function ProjectCard({ project }) {
             </a>
           </div>
           <p className='small'>
-            Status: <strong>{project.status}</strong>
+            Status: <strong>{formatStatus(project.status)}</strong>
           </p>
         </div>
       </div>

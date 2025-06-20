@@ -6,18 +6,9 @@ import { UPDATE_PROJECT } from "../Mutation/projectMutation";
 export default function EditProjectForm({ project }) {
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description);
-  const [status, setStatus] = useState(() => {
-    switch (project.status) {
-      case "Not Started":
-        return "new";
-      case "In Progress":
-        return "progress";
-      case "Completed":
-        return "completed";
-      default:
-        throw new Error(`Unknown status: ${project.status}`);
-    }
-  });
+  const [status, setStatus] = useState(project.status);
+
+  console.log("Project:", project);
 
   const [updateProject] = useMutation(UPDATE_PROJECT, {
     variables: { id: project.id, name, description, status },
@@ -31,7 +22,7 @@ export default function EditProjectForm({ project }) {
       return alert("Please fill out all fields");
     }
 
-    updateProject(name, description, status);
+    updateProject();
   };
 
   return (
@@ -65,9 +56,9 @@ export default function EditProjectForm({ project }) {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           >
-            <option value="new">Not Started</option>
-            <option value="progress">In Progress</option>
-            <option value="completed">Completed</option>
+            <option value="NOT_STARTED">Not Started</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
           </select>
         </div>
 
