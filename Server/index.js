@@ -6,7 +6,7 @@ const { ApolloServerPluginDrainHttpServer } = require('@apollo/server/plugin/dra
 const http = require('http');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const Schema = require('./Schema/schema');
+const Schema = require('./GraphQl/schema'); // ✅ Import the GraphQL schema
 
 
 const app = express();
