@@ -1,5 +1,5 @@
-const Client = require('../models/clients');
-const Project = require('../models/project');
+const Client = require("../models/clients");
+const Project = require("../models/project");
 
 module.exports = {
   // Clients
@@ -24,6 +24,11 @@ module.exports = {
   getProjects: async () => {
     return await Project.find();
   },
+  getProjectsByClientId: async (_, { clientId }) => {
+    return await Project.find({ clientId });
+  },
+
+  
 
   getProject: async (_, { id }) => {
     return await Project.findById(id);

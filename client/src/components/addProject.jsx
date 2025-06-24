@@ -28,7 +28,7 @@ export default function AddProjectModal() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (name === '' || description === '' || status === '') {
+    if (name === ''|| status === '') {
       return alert('Please fill in all fields');
     }
 
@@ -81,7 +81,7 @@ export default function AddProjectModal() {
                 <div className='modal-body'>
                   <form onSubmit={onSubmit}>
                     <div className='mb-3'>
-                      <label className='form-label'>Name</label>
+                      <label className='form-label'>Name *</label>
                       <input
                         type='text'
                         className='form-control'
@@ -100,7 +100,7 @@ export default function AddProjectModal() {
                       ></textarea>
                     </div>
                     <div className='mb-3'>
-                      <label className='form-label'>Status</label>
+                      <label className='form-label'>Status *</label>
                       <select
                         id='status'
                         className='form-select'

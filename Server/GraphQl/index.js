@@ -4,7 +4,7 @@ const {
   GraphQLList,
   GraphQLID,
   GraphQLNonNull,
-  GraphQLString,
+  GraphQLString
 } = require('graphql');
 
 const { ClientType, ProjectType, ProjectStatusEnum } = require('./types');
@@ -33,7 +33,6 @@ const RootQuery = new GraphQLObjectType({
     },
   },
 });
-
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
@@ -56,7 +55,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         clientId: { type: new GraphQLNonNull(GraphQLID) },
         name: { type: new GraphQLNonNull(GraphQLString) },
-        description: { type: new GraphQLNonNull(GraphQLString) },
+        description: { type: GraphQLString },
         status: { type: ProjectStatusEnum, defaultValue: 'Not Started' },
       },
       resolve: async (parent, args) => await resolvers.addProject(parent, args),
@@ -79,7 +78,9 @@ const Mutation = new GraphQLObjectType({
   },
 });
 
+
+
 module.exports = new GraphQLSchema({
   query: RootQuery,
-  mutation: Mutation,
+  mutation: Mutation
 });

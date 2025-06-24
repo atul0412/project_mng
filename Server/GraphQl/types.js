@@ -3,6 +3,7 @@ const {
   GraphQLID,
   GraphQLString,
   GraphQLEnumType,
+  GraphQLScalarType,
 } = require('graphql');
 const Client = require('../models/clients');
 
@@ -45,4 +46,4 @@ const ProjectType = new GraphQLObjectType({
   }),
 });
 
-module.exports = { ClientType, ProjectType, ProjectStatusEnum };
+module.exports = { ClientType, ProjectType, ProjectStatusEnum};

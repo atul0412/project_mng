@@ -71,7 +71,7 @@ export default function AddClientModal() {
             <div className='modal-body'>
               <form onSubmit={onSubmit}>
                 <div className='mb-3'>
-                  <label className='form-label'>Name</label>
+                  <label className='form-label'>Name *</label>
                   <input
                     type='text'
                     className='form-control'
@@ -81,7 +81,7 @@ export default function AddClientModal() {
                   />
                 </div>
                 <div className='mb-3'>
-                  <label className='form-label'>Email</label>
+                  <label className='form-label'>Email *</label>
                   <input
                     type='email'
                     className='form-control'
@@ -91,7 +91,7 @@ export default function AddClientModal() {
                   />
                 </div>
                 <div className='mb-3'>
-                  <label className='form-label'>Phone</label>
+                  <label className='form-label'>Phone *</label>
                   <input
                     type='text'
                     className='form-control'
