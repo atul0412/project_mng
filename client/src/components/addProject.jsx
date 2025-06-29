@@ -9,7 +9,6 @@ export default function AddProjectModal() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [clientId, setClientId] = useState('');
-  const [status, setStatus] = useState('new');
 
   const [addProject] = useMutation(ADD_PROJECT, {
     variables: { name, description, clientId, status },
@@ -22,21 +21,21 @@ export default function AddProjectModal() {
     },
   });
 
-  // Get Clients for select
   const { loading, error, data } = useQuery(GET_CLIENTS);
 
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (name === ''|| status === '') {
+    if (name === '' || status === '' || clientId === '') {
       return alert('Please fill in all fields');
     }
 
-    addProject(name, description, clientId, status);
+    addProject(); // ✅ removed arguments
 
+    // Reset form
     setName('');
     setDescription('');
-    setStatus('new');
+    setStatus('NOT_STARTED');
     setClientId('');
   };
 
@@ -99,22 +98,9 @@ export default function AddProjectModal() {
                         onChange={(e) => setDescription(e.target.value)}
                       ></textarea>
                     </div>
-                    <div className='mb-3'>
-                      <label className='form-label'>Status *</label>
-                      <select
-                        id='status'
-                        className='form-select'
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                      >
-                        <option value='NOT_STARTED'>Not Started</option>
-                        <option value='IN_PROGRESS'>In Progress</option>
-                        <option value='COMPLETED'>Completed</option>
-                      </select>
-                    </div>
 
                     <div className='mb-3'>
-                      <label className='form-label'>Client</label>
+                      <label className='form-label'>Client *</label>
                       <select
                         id='clientId'
                         className='form-select'

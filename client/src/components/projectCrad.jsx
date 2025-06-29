@@ -1,4 +1,4 @@
-import formatStatus from "../utils/utils";
+
 
 export default function ProjectCard({ project }) {
   return (
@@ -13,7 +13,7 @@ export default function ProjectCard({ project }) {
             </a>
           </div>
           <p className='small'>
-            Status: <strong>{formatStatus(project.status)}</strong>
+            Status: <strong>(project.status)</strong>
           </p>
         </div>
       </div>

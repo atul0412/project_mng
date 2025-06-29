@@ -5,7 +5,6 @@ import DeleteProjectButton from '../components/deleteProjectBtn.jsx';
 import EditProjectForm from '../components/UpdateProjectForm.jsx';
 import { useQuery } from '@apollo/client';
 import { GET_PROJECT } from '../queries/projectQueries.js';
-import formatStatus from '../utils/utils.js';
 
 export default function Project() {
   const { id } = useParams();
@@ -15,9 +14,9 @@ export default function Project() {
   if (error) return <p>Something Went Wrong</p>;
   if (!data || !data.project) return <p>Project not found</p>;
 
-  
 
-  return ( 
+
+  return (
     <div className='mx-auto w-75 card p-5'>
       <Link to='/' className='btn btn-light btn-sm w-25 d-inline ms-auto'>
         Back
@@ -25,9 +24,6 @@ export default function Project() {
 
       <h1>{data.project.name}</h1>
       <p>{data.project.description}</p>
-
-      <h5 className='mt-3'>Project Status</h5>
-      <p className='lead'>{formatStatus(data.project.status)}</p>
 
       <ClientInfo client={data.project.client} />
 
