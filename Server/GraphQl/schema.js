@@ -1,18 +1,25 @@
 const { gql } = require('graphql-tag');
 
 const typeDefs = gql`
+  enum Role {
+    CLIENT
+    ADMIN
+  }
+
   type Query {
     clients: [Client]
     client(_id: ID!): Client
     projects: [Project!]!
     project(id: ID!): Project
+    me: Client
   }
 
   type Client {
     id: ID!
     name: String
     email: String
-    phone: String 
+    phone: String
+    role: Role
     projects: [Project]
   }
 
@@ -21,6 +28,7 @@ const typeDefs = gql`
     name: String!
     description: String
     status: String
+    client: Client
   }
 
   type Token {
@@ -40,24 +48,26 @@ const typeDefs = gql`
     email: String!
     password: String!
     phone: String
+    role: Role
   }
 
   input LoginInput {
     email: String!
     password: String!
   }
+
   input ProjectInput {
     name: String!
     description: String
     status: String
     clientId: ID!
   }
+
   input UpdateProjectInput {
     name: String
     description: String
     status: String
   }
-    
 `;
 
 module.exports = typeDefs;

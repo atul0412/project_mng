@@ -5,19 +5,73 @@ const jwt = require('jsonwebtoken');
 
 const resolvers = {
   Query: {
-    clients: async () => await Client.find({}),
-    client: async (_, { _id }) => await Client.findById(_id),
-    projects: async () => await Project.find({}),
-    project: async (_, id) => await Project.findById(id),
+    clients: async (_, __, context) => {
+      if (!context.user || context.user.role !== 'ADMIN') {
+        throw new Error("You are not a admin ");
+      }
+      return await Client.find({});
+    },
+
+    client: async (_, { _id }, context) => {
+      if (!context.user || (context.user.role !== 'ADMIN' && context.user.id !== _id)) {
+        throw new Error("Unauthorized");
+      }
+      return await Client.findById(_id);
+    },
+
+    projects: async (_, __, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized");
+      }
+
+      if (context.user.role === 'ADMIN') {
+        return await Project.find({});
+      }
+
+      // CLIENT - only their own projects
+      return await Project.find({ clientId: context.user.id });
+    },
+
+    project: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized");
+      }
+
+      const project = await Project.findById(id);
+      if (!project) {
+        throw new Error("Project not found");
+      }
+
+      if (context.user.role === 'ADMIN' || project.clientId.toString() === context.user.id) {
+        return project;
+      }
+
+      throw new Error("Unauthorized");
+    },
+
+    me: async (_, __, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized");
+      }
+      return await Client.findById(context.user.id);
+    }
   },
+
   Client: {
-    projects: async (client) => await Project.find({ clientId: client._id })
+    projects: async (client, _, context) => {
+      if (
+        context.user.role !== 'ADMIN' &&
+        context.user.id !== client._id.toString()
+      ) {
+        throw new Error("Unauthorized");
+      }
+      return await Project.find({ clientId: client._id });
+    }
   },
+
   Mutation: {
-    // Mutation for clinet signup and login 
     signupClient: async (_, { newClient }) => {
       try {
-
         const existingClient = await Client.findOne({ email: newClient.email });
 
         if (existingClient) {
@@ -29,6 +83,7 @@ const resolvers = {
         const client = new Client({
           ...newClient,
           password: hashedPassword,
+          role: newClient.role || 'CLIENT', // default to CLIENT
         });
 
         return await client.save();
@@ -36,6 +91,7 @@ const resolvers = {
         throw new Error(err.message || "Error signing up client");
       }
     },
+
     loginClient: async (_, { clientLogin }) => {
       try {
         const existingClient = await Client.findOne({ email: clientLogin.email });
@@ -49,9 +105,13 @@ const resolvers = {
         }
 
         const token = jwt.sign(
-          { id: existingClient._id, email: existingClient.email },
+          {
+            id: existingClient._id,
+            email: existingClient.email,
+            role: existingClient.role
+          },
           process.env.JWT_SECRET,
-          { expiresIn: "1d" }
+          { expiresIn: '1d' }
         );
 
         return { token };
@@ -60,9 +120,21 @@ const resolvers = {
       }
     },
 
-    // mutation for adding, updating and deleting projects 
-    addProject: async (_, { newProject }) => {
-      const clientExists = await Client.findById(newProject.clientId);
+    addProject: async (_, { newProject }, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized");
+      }
+
+      const clientId = newProject.clientId;
+
+      if (
+        context.user.role !== 'ADMIN' &&
+        context.user.id !== clientId
+      ) {
+        throw new Error("You can only add projects for yourself");
+      }
+
+      const clientExists = await Client.findById(clientId);
       if (!clientExists) {
         throw new Error("Client not found");
       }
@@ -70,33 +142,47 @@ const resolvers = {
       const project = new Project(newProject);
       return await project.save();
     },
-    deleteProject: async (_, { id }) => {
-      try {
-        const deleted = await Project.findByIdAndDelete(id);
-        if (!deleted) {
-          throw new Error("Project not found");
-        }
-        return "Project deleted successfully";
-      } catch (error) {
-        throw new Error(error.message);
+
+    deleteProject: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized");
       }
+
+      const project = await Project.findById(id);
+      if (!project) {
+        throw new Error("Project not found");
+      }
+
+      if (
+        context.user.role !== 'ADMIN' &&
+        project.clientId.toString() !== context.user.id
+      ) {
+        throw new Error("You can only delete your own projects");
+      }
+
+      await project.deleteOne();
+      return "Project deleted successfully";
     },
-    updateProject: async (_, { id, input }) => {
-      try {
-        const updatedProject = await Project.findByIdAndUpdate(
-          id,
-          { $set: input },
-          { new: true } // return the updated document
-        );
 
-        if (!updatedProject) {
-          throw new Error("Project not found");
-        }
-
-        return updatedProject;
-      } catch (err) {
-        throw new Error(err.message || "Failed to update project");
+    updateProject: async (_, { id, input }, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized");
       }
+
+      const project = await Project.findById(id);
+      if (!project) {
+        throw new Error("Project not found");
+      }
+
+      if (
+        context.user.role !== 'ADMIN' &&
+        project.clientId.toString() !== context.user.id
+      ) {
+        throw new Error("You can only update your own projects");
+      }
+
+      Object.assign(project, input);
+      return await project.save();
     },
   },
 };
